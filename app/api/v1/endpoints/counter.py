@@ -23,14 +23,14 @@ def record_visit(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/visits/{page_id}", response_model=VisitCount)
+@router.get("/visits/{page_id}")
 def get_visits(
     page_id: str,
     counter_service: VisitCounterService = Depends(get_visit_counter_service)
 ):
-    """Get visit count for a website"""
+    """Get visit count for a website with application caching"""
     try:
-        count = counter_service.get_visit_count(page_id)
-        return VisitCount(visits=count, served_via="redis")
+        response = counter_service.get_visit_count(page_id)
+        return response  # Includes visits count and whether it's from cache or Redis
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
