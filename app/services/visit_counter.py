@@ -1,24 +1,21 @@
-from typing import Dict, List, Any
-import asyncio
-from datetime import datetime
-from ..core.redis_manager import RedisManager
-
 class VisitCounterService:
     def __init__(self):
-        """Initialize the visit counter service with Redis manager"""
-        self.redis_manager = RedisManager()
+        """Initialize the visit counter service with an in-memory store"""
+        self.visit_counts = {}
 
-    async def increment_visit(self, page_id: str) -> None:
+    def increment_visit(self, page_id: str) -> None:
         """
         Increment visit count for a page
         
         Args:
             page_id: Unique identifier for the page
         """
-        # TODO: Implement visit count increment
-        pass
+        if page_id in self.visit_counts:
+            self.visit_counts[page_id] += 1
+        else:
+            self.visit_counts[page_id] = 1
 
-    async def get_visit_count(self, page_id: str) -> int:
+    def get_visit_count(self, page_id: str) -> int:
         """
         Get current visit count for a page
         
@@ -28,5 +25,4 @@ class VisitCounterService:
         Returns:
             Current visit count
         """
-        # TODO: Implement getting visit count
-        return 0
+        return self.visit_counts.get(page_id, 0)
