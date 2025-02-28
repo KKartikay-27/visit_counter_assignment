@@ -16,7 +16,7 @@ def record_visit(
     page_id: str,
     counter_service: VisitCounterService = Depends(get_visit_counter_service)
 ):
-    """Record a visit for a website"""
+    """Record a visit for a website, buffering writes in-memory"""
     try:
         counter_service.increment_visit(page_id)
         return {"status": "success", "message": f"Visit recorded for page {page_id}"}
@@ -28,9 +28,9 @@ def get_visits(
     page_id: str,
     counter_service: VisitCounterService = Depends(get_visit_counter_service)
 ):
-    """Get visit count for a website with application caching"""
+    """Get visit count for a website, combining buffered and Redis counts"""
     try:
         response = counter_service.get_visit_count(page_id)
-        return response  # Includes visits count and whether it's from cache or Redis
+        return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
